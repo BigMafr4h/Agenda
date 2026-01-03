@@ -135,8 +135,8 @@ int main(){
             break;
         case 3:
             printf("\ndigite o nome do contato\n");
-            scanf("%[^\n]s", nome);
-            setbuf(stdin, NULL);
+            fgets(nome, sizeof(nome), stdin);
+            nome[strcspn(nome, "\n")] = 0;
             indice = pesquisar_contato(NRegistro, nome);
             if(indice >= 0 && indice <=99){
                 listar_contato(indice);
@@ -148,9 +148,10 @@ int main(){
         case 4:
             printf("\n\tDigite o numero do contato [1-99]\n");
             scanf("%d", &indice);
-            setbuf(stdin, NULL);
             indice-=1; //por conta do zero
             if(indice >= 0 && indice <=99){
+		    int c;
+	        while((c = getchar()) != '\n' && c != EOF);	
                 alterar_contato(indice);
             }else{
                 printf("\n\tcontato inexistente\n");
@@ -167,4 +168,4 @@ int main(){
     }while (op != 100);
     
     return 0;
-
+}
