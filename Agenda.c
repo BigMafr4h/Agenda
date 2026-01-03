@@ -7,30 +7,36 @@
 struct agenda{
     char nome[40];
     int idade;
-    char telefone[17]; //fazer o mesmo para os outros
-    char cidade[50];
+    unsigned long int telefone;
+    char cidade[40];
 
 }pessoa[MAX];
 
 void adicionar_contato(int registro){
-    char dados[50]; ///mudar amanha
+    char dados[50];
+    char city[40];		 ///
     printf("\tNome do contato: ");
-    scanf("%[^\n]s", dados);
-    setbuf(stdin, NULL);
+    fgets(dados, sizeof(dados), stdin);//gravando dados e limpando a entrada de forma eficiente e segura
+    dados[strcspn(dados, "\n")] = 0; // retirando o caracter enter evitando lixo
     strncpy(pessoa[registro].nome, dados, 40);/// e aqui sim nós copiamos o valor de uma para outra
 
     printf("\n\tIdade do contato: ");
     scanf("%d", &pessoa[registro].idade);
-    setbuf(stdin, NULL);
+    int c;
+    while((c = getchar()) != '\n' && c != EOF); //fazendo a limpeza do buffer para que o próximo dado possa ser armazenado
+						//algo interessante a ressaltar é que na memória do programa o sistema
+						//converte 25 para inteiro 25 (se a idade for 25) e armazena em 
+						// &pessoa[registro].idade e no buffer de entrada(stdin) fica sobrando
+						// o enter '\n', que se caso ele não for limpo o sistema irá pular 
+						// a cidade devido esse "enter" estar no stdin ainda, deixando vazio
+
+    printf("\n\tCidade do contato: ");
+    fgets(city, sizeof(city), stdin);
+    city[strcspn(city, "\n")] = 0;
+    strncpy(pessoa[registro].cidade, city, 40);
 
     printf("\n\tTelefone do contato: ");
-    scanf("%[^\n]s", pessoa[registro].telefone); ///todos iguais a esse, nome e telefone
-    setbuf(stdin, NULL);
-
-    printf("\n\tCidade do contato: ");    
-    scanf("%[^\n]s", dados);
-    setbuf(stdin, NULL);
-    strncpy(pessoa[registro].cidade, dados, 49);
+    scanf("%li", &pessoa[registro].telefone);
     
 }
 void mostrar_agenda(int qnt_contatos){
@@ -40,7 +46,7 @@ void mostrar_agenda(int qnt_contatos){
         printf("\n\tN do contato: %d", contagem++);
         printf("\n\tNome do contato: %s", pessoa[i].nome);
         printf("\n\tIdade do contato: %d", pessoa[i].idade);
-        printf("\n\tTelefone do contato: %s", pessoa[i].telefone);
+        printf("\n\tTelefone do contato: %ld", pessoa[i].telefone);
         printf("\n\tCidade do contato: %s\n\n", pessoa[i].cidade);
     }
     printf("\n");
@@ -49,7 +55,7 @@ void mostrar_agenda(int qnt_contatos){
 void listar_contato(int indice){
     printf("\n\tnome do contato %s", pessoa[indice].nome);
     printf("\n\tIdade do contato %d", pessoa[indice].idade);
-    printf("\n\tTelefone do contato %s", pessoa[indice].telefone);
+    printf("\n\tTelefone do contato %ld", pessoa[indice].telefone);
     printf("\n\tCidade do contato %s\n", pessoa[indice].cidade); 
 }
 
@@ -65,30 +71,32 @@ int pesquisar_contato(int qnt_contatos, char* nomebuscado){
 
 void alterar_contato(int indice){
     int idade;
-    char telefone[17];
+    unsigned long int telefone;
     char cidade[50];
     char nome[40];
     char dados[50];
 
     printf("\tDigite o nome do contato: ");
-    scanf("%[^\n]s", dados);
-    setbuf(stdin, NULL);
+    fgets(dados, sizeof(dados), stdin);
+    dados[strcspn(dados, "\n")] = 0; 
     strncpy(pessoa[indice].nome, dados,39);//secure function
 
     printf("\tDigite a idade do contato: ");
     scanf("%d", &idade);
-    setbuf(stdin, NULL);
     pessoa[indice].idade = idade;
+    
 
     printf("\tDigite o telefone do contato: ");
-    scanf("%[^\n]s", telefone);
-    setbuf(stdin, NULL);
-    strcpy(pessoa[indice].telefone, telefone); // char[]
+    scanf("%ld", &telefone);
+    pessoa[indice].telefone = telefone; 
+    int c;
+    while((c = getchar()) != '\n' && c != EOF);//fazendo a limpeza do buffer para que o próximo dado possa ser armazenado
+
 
     printf("\tDigite o nome da cidade do contato: ");
-    scanf("%[^\n]s", dados);
-    setbuf(stdin, NULL);
-    strncpy(pessoa[indice].cidade, dados, 49);
+    fgets(dados, sizeof(dados), stdin);
+    dados[strcspn(dados, "\n")] = 0; 
+    strncpy(pessoa[indice].cidade, dados, 40);
 }
 
 void menu(){
@@ -155,7 +163,8 @@ int main(){
         printf("\n\tOpcao invalida!\n");
             break;
         }
-    } while (op != 100);
+
+    }while (op != 100);
     
     return 0;
-}
+
